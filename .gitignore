@@ -1,6 +1,35 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+.yarn/
+
+# Build output
 dist/
+build/
+.next/
+.vite/
+
+# Environment and secrets
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+
+# Logs
+*.log
+logs/
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+coverage/
+
+# TypeScript build metadata
 *.tsbuildinfo

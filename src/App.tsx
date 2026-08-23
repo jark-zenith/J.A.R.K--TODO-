@@ -4,6 +4,7 @@ import {
   ListTodo, Menu, Mic, MoreHorizontal, Plus, Search, Settings2, Sparkles, Tag, Trash2, X, Zap
 } from 'lucide-react';
 import { taskService } from './taskService';
+import { executeJarkAction } from './jarkActions';
 import type { Task, TaskDraft, TaskPriority, TaskStatus } from './types';
 
 type View = 'dashboard' | 'all' | 'today' | 'upcoming' | 'overdue' | 'completed' | 'priority';
@@ -57,14 +58,17 @@ function App() {
   const removeTask = (task: Task) => { if (window.confirm(`Delete “${task.title}”?`)) persist(taskService.deleteTask(tasks, task.id)); };
   const submitTask = (draft: TaskDraft) => { persist(modal?.task ? tasks.map((task) => task.id === modal.task!.id ? taskService.updateTask(task, draft) : task) : [taskService.createTask(draft), ...tasks]); setModal(null); };
   const navigate = (nextView: View) => { setView(nextView); setMobileNav(false); };
-  const submitCommand = async () => {
-    if (!command.trim() || commandStatus === 'loading') return;
+  const submitCommand = async (commandText = command) => {
+    if (!commandText.trim() || commandStatus === 'loading') return;
     setCommandStatus('loading'); setCommandReply('');
     try {
-      const response = await fetch('/api/command', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command }) });
-      const result = await response.json() as { reply?: string; error?: string };
+      const response = await fetch('/api/command', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: commandText }) });
+      const result = await response.json() as { reply?: string; error?: string; action?: unknown };
       if (!response.ok) throw new Error(result.error || 'J.A.R.K. could not process that instruction.');
-      setCommandReply(result.reply || 'Instruction received.');
+      if (!result.action) throw new Error('J.A.R.K. did not return an executable action.');
+      const execution = executeJarkAction(result.action, tasks, { confirmDelete: (task) => window.confirm(`Delete “${task.title}”?`) });
+      if (execution.changed) persist(execution.tasks);
+      setCommandReply(execution.reply);
     } catch (error) { setCommandReply(error instanceof Error ? error.message : 'J.A.R.K. could not process that instruction.'); }
     finally { setCommandStatus('idle'); }
   };
@@ -74,7 +78,7 @@ function App() {
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US'; recognition.interimResults = false; recognition.maxAlternatives = 1;
     recognition.onstart = () => setCommandStatus('listening');
-    recognition.onresult = (event) => { setCommand(event.results[0][0].transcript); setCommandStatus('idle'); };
+    recognition.onresult = (event) => { const transcript = event.results[0][0].transcript; setCommand(transcript); setCommandStatus('idle'); void submitCommand(transcript); };
     recognition.onerror = () => { setCommandReply('I could not hear that instruction. Please try again.'); setCommandStatus('idle'); };
     recognition.onend = () => setCommandStatus('idle');
     recognition.start();

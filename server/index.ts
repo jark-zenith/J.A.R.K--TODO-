@@ -13,9 +13,21 @@ type CommandAction = {
   priority?: 'low' | 'medium' | 'high' | 'urgent';
   category?: string;
   dueDate?: string;
+  description?: string;
+  status?: 'todo' | 'in-progress' | 'completed';
+  tags?: string[];
 };
 
 type CommandResponse = { reply: string; action: CommandAction };
+const actionNames = new Set<CommandAction['action']>(['create_task', 'update_task', 'delete_task', 'complete_task', 'get_tasks', 'search_tasks', 'get_today_tasks', 'get_upcoming_tasks', 'get_overdue_tasks', 'none']);
+
+function isCommandResponse(value: unknown): value is CommandResponse {
+  if (!value || typeof value !== 'object') return false;
+  const response = value as Partial<CommandResponse>;
+  if (typeof response.reply !== 'string' || !response.action || typeof response.action !== 'object') return false;
+  const action = response.action as Partial<CommandAction>;
+  return typeof action.action === 'string' && actionNames.has(action.action as CommandAction['action']);
+}
 
 function sendJson(response: import('node:http').ServerResponse, status: number, body: unknown): void {
   response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -49,7 +61,7 @@ async function handleCommand(request: import('node:http').IncomingMessage, respo
       temperature: 0.2,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: 'You are J.A.R.K., a concise task-management assistant. Return JSON only with keys reply and action. action must be an object with action set to one of create_task, update_task, delete_task, complete_task, get_tasks, search_tasks, get_today_tasks, get_upcoming_tasks, get_overdue_tasks, none. For create_task include title, priority, category, and dueDate when known. Never invent a task id. Use none when the request is conversational or cannot be mapped safely.' },
+        { role: 'system', content: 'You are J.A.R.K., a concise task-management intent parser. Return JSON only with keys reply and action. action must be an object with action set to one of create_task, update_task, delete_task, complete_task, get_tasks, search_tasks, get_today_tasks, get_upcoming_tasks, get_overdue_tasks, none. Use title for a new task title. For operations on an existing task, use query for the words that identify it and never invent a taskId. For update_task include only requested changes: title, description, priority, category, dueDate, status, or tags. For create_task include priority, category, dueDate, and tags when known. Dates may be today, tomorrow, in N days, or YYYY-MM-DD. Use none when the request is conversational or cannot be mapped safely. The reply is only a brief intent acknowledgement; the application will generate the final response from real task data.' },
         { role: 'user', content: body.command.trim() }
       ]
     })
@@ -63,7 +75,12 @@ async function handleCommand(request: import('node:http').IncomingMessage, respo
   const payload = await openAiResponse.json() as { choices?: Array<{ message?: { content?: string } }> };
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error('The AI provider returned an empty response.');
-  const result = JSON.parse(content) as CommandResponse;
+  const parsed: unknown = JSON.parse(content);
+  if (!isCommandResponse(parsed)) {
+    sendJson(response, 502, { error: 'J.A.R.K. returned an invalid action.' });
+    return;
+  }
+  const result = parsed;
   sendJson(response, 200, result);
 }
 

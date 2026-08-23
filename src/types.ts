@@ -18,3 +18,18 @@ export interface Task {
 }
 
 export type TaskDraft = Pick<Task, 'title' | 'description' | 'priority' | 'category' | 'dueDate' | 'tags'>;
+
+export type JarkActionName = 'create_task' | 'update_task' | 'delete_task' | 'complete_task' | 'get_tasks' | 'search_tasks' | 'get_today_tasks' | 'get_upcoming_tasks' | 'get_overdue_tasks' | 'none';
+
+export interface JarkAction {
+  action: JarkActionName;
+  taskId?: string;
+  title?: string;
+  description?: string;
+  priority?: TaskPriority;
+  category?: string;
+  dueDate?: string;
+  status?: TaskStatus;
+  tags?: string[];
+  query?: string;
+}

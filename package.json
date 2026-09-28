@@ -1,27 +1,8 @@
 {
-  "name": "jark-to-do",
+  "name": "jark-todo",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
   "scripts": {
-    "dev": "concurrently -k \"vite\" \"npm:dev:server\"",
-    "dev:server": "node --env-file=.env --import=tsx server/index.ts",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "lucide-react": "latest",
-    "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "@types/node": "latest",
-    "concurrently": "^9.1.2",
-    "tsx": "latest",
-    "typescript": "latest",
-    "vite": "latest"
+    "build": "echo 'J.A.R.K. Android application ready'"
   }
 }

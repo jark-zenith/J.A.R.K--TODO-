@@ -1,27 +1,25 @@
-# J.A.R.K. To-Do
+# J.A.R.K. To-Do (Android)
 
-A futuristic productivity application and future task-management module of the J.A.R.K. AI ecosystem.
+A futuristic personal task operating system and command center built with **Kotlin** and **Jetpack Compose**.
 
-## Vision
+## Features
 
-J.A.R.K. To-Do is designed to manage tasks, priorities, deadlines, categories, projects, and productivity while providing a clean foundation for future J.A.R.K. AI and voice integration.
+- **Personal Command Center (Dashboard)**: Real-time workspace stats, focus score, system health momentum ring, and urgent priority queue.
+- **Task Management**: Create, edit, complete, reopen, and delete tasks with priority levels (`urgent`, `high`, `medium`, `low`), due dates, categories, and tags.
+- **J.A.R.K. Command Layer**: High-speed hybrid natural language instruction parser supporting text and speech input. Automatically handles natural instructions such as:
+  - *"Add task Review code due tomorrow with high priority"*
+  - *"Complete task Map next milestone"*
+  - *"What should I work on next?"*
+  - *"What is due today?"*
+  - *"Show overdue tasks"*
+- **Persistent Local Database**: Built with Android Room database for offline reliability and reactive state flows.
+- **Filtering & Search**: Dynamic search across titles, descriptions, categories, and tags with real-time status and priority filters.
+- **Futuristic J.A.R.K. Cyberpunk UI**: Distinctive dark theme with electric blue tech accents, neon indicators, and Material 3 adaptive design.
 
-## Development
+## Architecture
 
-This repository is intentionally initialized with project documentation and security defaults. The application implementation should be created by the VS Code AI Agent according to `PROJECT_SPEC.md`.
-
-## Core goals
-
-- Real task CRUD
-- Persistent task storage
-- Dashboard and productivity statistics
-- Search and filtering
-- Priorities, categories, tags, and due dates
-- Responsive futuristic J.A.R.K. interface
-- AI-ready task service architecture
-- Voice-ready command interface
-- Clean TypeScript architecture
-
-## Security
-
-Never commit `.env` or real API keys. Use `.env.example` as the template for local development.
+- **Language**: Kotlin
+- **UI Framework**: Jetpack Compose (Material Design 3)
+- **State Management**: ViewModel + Kotlin Coroutines & StateFlow
+- **Local Persistence**: Room SQLite Database
+- **AI / NLP**: Hybrid Offline NLP Engine + optional Gemini 3.5 Flash REST API Integration

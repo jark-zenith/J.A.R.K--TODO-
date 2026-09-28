@@ -1,0 +1,6 @@
+{
+  "name": "J.A.R.K. To-Do",
+  "description": "Personal task operating system and command center with priority queue, system health metrics, voice command input, and intelligent assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

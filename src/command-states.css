@@ -1,1 +1,0 @@
-.command-input button:disabled{cursor:not-allowed;opacity:.35}.command-input button.is-listening{color:var(--red);animation:voice-pulse 1.2s ease-in-out infinite}.command-reply{flex-basis:100%;margin:10px 0 0 57px;color:#a9c9e5;font-size:11px;line-height:1.5}@keyframes voice-pulse{50%{box-shadow:0 0 0 5px #f46c6733;border-radius:50%}}
